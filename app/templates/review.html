@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="stacked-detail">
+    <article class="card">
+        <div class="card-header">
+            <div>
+                <h2>Record {{ record.id }}</h2>
+                <p>{{ record.original_filename }}</p>
+            </div>
+            <span class="status-pill status-{{ record.status }}">{{ record.status }}</span>
+        </div>
+
+        <dl class="meta-grid">
+            <div><dt>Vendor</dt><dd>{{ record.vendor_name or "-" }}</dd></div>
+            <div><dt>Document Type</dt><dd>{{ record.document_type or "-" }}</dd></div>
+            <div><dt>Document Number</dt><dd>{{ record.document_number or "-" }}</dd></div>
+            <div><dt>Date</dt><dd>{{ record.document_date or "-" }}</dd></div>
+            <div><dt>Stored PDF</dt><dd><a href="{{ url_for('main.view_pdf', record_id=record.id) }}" target="_blank">Open PDF</a></dd></div>
+            <div><dt>Extractor</dt><dd>{{ record.extraction_provider or "-" }}</dd></div>
+            <div><dt>OCR Used</dt><dd>{{ "Yes" if extraction_payload.get("ocr_used") else "No" }}</dd></div>
+        </dl>
+
+        <details>
+            <summary>Raw extraction JSON</summary>
+            <pre class="code-block">{{ record.raw_extraction_json or "No extraction payload saved." }}</pre>
+        </details>
+    </article>
+
+    {% if extraction_payload.get("warnings") %}
+    <article class="card warning-card">
+        <h2>Extraction Warning</h2>
+        {% for warning in extraction_payload.get("warnings", []) %}
+            <p class="warning-text">{{ warning }}</p>
+        {% endfor %}
+        <p class="warning-text">This usually means the scan is image-only and needs OCR before the app can read vendor and line details accurately.</p>
+    </article>
+    {% endif %}
+
+    <article class="card">
+        <div class="card-header">
+            <div>
+                <h2>Review</h2>
+                <p>Confirm each extracted line and fill in receiving details.</p>
+            </div>
+            <form method="post" action="{{ url_for('main.reprocess_record', record_id=record.id) }}">
+                <button type="submit">Re-run Extraction</button>
+            </form>
+        </div>
+        <form method="post">
+            <div class="line-stack">
+                {% for line in record.line_items %}
+                    <section class="line-card">
+                        <div class="line-heading">
+                            <div class="line-id">Line {{ line.line_number }}</div>
+                            <h3>{{ line.description }}</h3>
+                        </div>
+
+                        <div class="line-summary">
+                            <span>Extracted Qty: {{ line.extracted_quantity if line.extracted_quantity is not none else "-" }}</span>
+                            <span>Unit Price: {{ "$%.2f"|format(line.extracted_unit_price) if line.extracted_unit_price is not none else "-" }}</span>
+                            <span>Line Total: {{ "$%.2f"|format(line.extracted_line_total) if line.extracted_line_total is not none else "-" }}</span>
+                        </div>
+
+                        <div class="checkbox-row">
+                            <label><input type="checkbox" name="confirmed_correct_{{ line.id }}" {% if line.confirmed_correct %}checked{% endif %}> Extraction looks correct</label>
+                            <label><input type="checkbox" name="item_present_{{ line.id }}" {% if line.item_present %}checked{% endif %}> Item was present</label>
+                        </div>
+
+                        <div class="form-grid">
+                            <label>
+                                Actual quantity received
+                                <input type="number" step="0.01" name="actual_quantity_received_{{ line.id }}" value="{{ line.actual_quantity_received if line.actual_quantity_received is not none else '' }}">
+                            </label>
+                            <label>
+                                Batch / lot number
+                                <input type="text" name="lot_number_{{ line.id }}" value="{{ line.lot_number or '' }}">
+                            </label>
+                            <label>
+                                Expiration date
+                                <input type="text" name="expiration_date_{{ line.id }}" placeholder="YYYY-MM-DD" value="{{ line.expiration_date or '' }}">
+                            </label>
+                            <label class="full-width">
+                                Discrepancy notes
+                                <textarea name="discrepancy_notes_{{ line.id }}" rows="2">{{ line.discrepancy_notes or '' }}</textarea>
+                            </label>
+                        </div>
+                    </section>
+                {% else %}
+                    <p class="empty-state-block">No extracted line items were found for this PDF yet.</p>
+                {% endfor %}
+            </div>
+
+            <div class="review-footer">
+                <label>
+                    Final status
+                    <select name="status">
+                        {% for status in ["pending_review", "ready_for_ezyvet_entry", "needs_manager_review", "incomplete", "error"] %}
+                            <option value="{{ status }}" {% if record.status == status %}selected{% endif %}>{{ status }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label class="full-width">
+                    Record notes
+                    <textarea name="review_summary" rows="3">{{ record.review_summary or '' }}</textarea>
+                </label>
+            </div>
+
+            <div class="button-row">
+                <button type="submit">Save review</button>
+                <a class="secondary-button" href="{{ url_for('main.queue') }}">Back to queue</a>
+            </div>
+        </form>
+    </article>
+</section>
+{% endblock %}

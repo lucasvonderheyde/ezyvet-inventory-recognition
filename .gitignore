@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.db
+*.log
+.env
+storage/inventory_intake.db
+storage/incoming/*
+storage/processing/*
+storage/reviewed/*
+storage/error/*
+!storage/incoming/.gitkeep
+!storage/processing/.gitkeep
+!storage/reviewed/.gitkeep
+!storage/error/.gitkeep

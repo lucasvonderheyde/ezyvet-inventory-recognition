@@ -1,0 +1,293 @@
+body {
+    margin: 0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: #f4f7fb;
+    color: #1f2933;
+}
+
+a {
+    color: #1b4d70;
+}
+
+.site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 2rem;
+    background: #133c55;
+    color: #f8fbff;
+}
+
+.site-header h1,
+.card h2,
+.line-card h3 {
+    margin: 0;
+}
+
+.site-header p {
+    margin: 0.35rem 0 0;
+    color: #d4e6f2;
+}
+
+.site-header nav a {
+    color: #f8fbff;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.page-shell {
+    padding: 1.5rem 2rem 3rem;
+}
+
+.card,
+.line-card {
+    background: #ffffff;
+    border: 1px solid #d8e1e8;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.card {
+    padding: 1.25rem;
+}
+
+.card-header,
+.button-row,
+.checkbox-row,
+.filter-form {
+    display: flex;
+    gap: 1rem;
+}
+
+.card-header {
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.filter-form,
+.checkbox-row,
+.button-row {
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.stacked-detail {
+    display: grid;
+    gap: 1rem;
+}
+
+.stacked-detail > .card {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.data-table th,
+.data-table td {
+    padding: 0.8rem;
+    border-bottom: 1px solid #e5edf3;
+    text-align: left;
+    vertical-align: top;
+}
+
+.empty-state {
+    text-align: center;
+    color: #66788a;
+    padding: 2rem 1rem;
+}
+
+.status-pill {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 0.25rem 0.7rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: capitalize;
+    background: #dceaf7;
+    color: #144261;
+}
+
+.status-ready_for_ezyvet_entry,
+.flash-success {
+    background: #dff5e7;
+    color: #245f3a;
+}
+
+.status-needs_manager_review {
+    background: #fff1cc;
+    color: #8b5e00;
+}
+
+.status-incomplete,
+.status-error,
+.flash-error {
+    background: #fde3e1;
+    color: #8d2f2b;
+}
+
+.status-pending_review,
+.status-processing {
+    background: #dceaf7;
+    color: #144261;
+}
+
+.meta-grid,
+.form-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.meta-grid dt {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #52616d;
+}
+
+.meta-grid dd {
+    margin: 0.3rem 0 0;
+}
+
+.line-stack {
+    display: grid;
+    gap: 1rem;
+    margin: 1rem 0 1.5rem;
+}
+
+.line-card {
+    padding: 1.1rem;
+    border-left: 5px solid #9bb9cc;
+}
+
+.line-summary {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin: 0.75rem 0;
+    color: #52616d;
+}
+
+.line-heading {
+    display: grid;
+    gap: 0.4rem;
+}
+
+.line-id {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #5c7282;
+}
+
+.warning-card {
+    background: #fff7e7;
+    border-color: #f0d38a;
+}
+
+.warning-text {
+    margin: 0.4rem 0;
+    color: #7a5800;
+}
+
+.empty-state-block {
+    margin: 0;
+    padding: 1rem;
+    border: 1px dashed #bfd0dc;
+    border-radius: 10px;
+    background: #f8fbfd;
+    color: #52616d;
+}
+
+.review-footer {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 280px minmax(0, 1fr);
+}
+
+label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-weight: 600;
+}
+
+input,
+select,
+textarea,
+button,
+.secondary-button {
+    font: inherit;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid #bfd0dc;
+    border-radius: 8px;
+    box-sizing: border-box;
+    background: #fff;
+}
+
+button,
+.secondary-button {
+    border: 0;
+    border-radius: 8px;
+    padding: 0.7rem 1rem;
+    background: #1b4d70;
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.secondary-button {
+    background: #6b7d8b;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+.flash-stack {
+    margin-bottom: 1rem;
+}
+
+.flash {
+    padding: 0.85rem 1rem;
+    border-radius: 10px;
+    margin-bottom: 0.75rem;
+}
+
+.code-block {
+    white-space: pre-wrap;
+    background: #f5f7fa;
+    padding: 0.85rem;
+    border-radius: 8px;
+    border: 1px solid #d9e2ec;
+    overflow-x: auto;
+}
+
+@media (max-width: 720px) {
+    .site-header,
+    .page-shell {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .data-table {
+        display: block;
+        overflow-x: auto;
+    }
+
+    .review-footer {
+        grid-template-columns: 1fr;
+    }
+}
