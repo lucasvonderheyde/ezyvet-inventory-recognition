@@ -14,3 +14,5 @@ storage/error/*
 !storage/processing/.gitkeep
 !storage/reviewed/.gitkeep
 !storage/error/.gitkeep
+gh_*.msi
+gh_*.zip
