@@ -29,4 +29,5 @@ class Config:
     WATCHER_ENABLED = os.getenv("WATCHER_ENABLED", "true").lower() == "true"
     FILE_STABILITY_CHECK_INTERVAL = int(os.getenv("FILE_STABILITY_CHECK_INTERVAL", "2"))
     FILE_STABILITY_REQUIRED_PASSES = int(os.getenv("FILE_STABILITY_REQUIRED_PASSES", "2"))
+    WATCH_FOLDER_SCAN_INTERVAL = int(os.getenv("WATCH_FOLDER_SCAN_INTERVAL", "5"))
     LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")

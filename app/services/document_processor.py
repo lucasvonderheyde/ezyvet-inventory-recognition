@@ -9,6 +9,27 @@ from .extraction import dump_raw_payload, provider_from_name
 
 
 class DocumentProcessor:
+    def process_incoming_folder(self) -> int:
+        watch_dir = Path(current_app.config["WATCH_FOLDER"])
+        processed_count = 0
+        for pdf_path in sorted(watch_dir.glob("*.pdf")):
+            record = self.process_pdf(str(pdf_path))
+            if record:
+                processed_count += 1
+        return processed_count
+
+    def recover_processing_folder(self) -> int:
+        processing_dir = Path(current_app.config["PROCESSING_FOLDER"])
+        recovered_count = 0
+        for pdf_path in sorted(processing_dir.glob("*.pdf")):
+            existing_record = DocumentRecord.query.filter_by(current_file_path=str(pdf_path)).first()
+            if existing_record:
+                continue
+            record = self.process_existing_processing_pdf(str(pdf_path))
+            if record:
+                recovered_count += 1
+        return recovered_count
+
     def wait_for_stable_file(self, file_path: str) -> bool:
         path = Path(file_path)
         interval = current_app.config["FILE_STABILITY_CHECK_INTERVAL"]
@@ -42,8 +63,18 @@ class DocumentProcessor:
             return None
 
         processing_path = self._move_file(path, current_app.config["PROCESSING_FOLDER"])
+        return self._create_record_and_extract(processing_path, original_filename=path.name)
+
+    def process_existing_processing_pdf(self, processing_path: str) -> DocumentRecord | None:
+        path = Path(processing_path)
+        if not path.exists():
+            current_app.logger.warning("Missing processing file %s", processing_path)
+            return None
+        return self._create_record_and_extract(path, original_filename=path.name)
+
+    def _create_record_and_extract(self, processing_path: Path, original_filename: str) -> DocumentRecord:
         record = DocumentRecord(
-            original_filename=path.name,
+            original_filename=original_filename,
             stored_filename=processing_path.name,
             current_file_path=str(processing_path),
             status="processing",

@@ -1,7 +1,8 @@
 import json
 from datetime import datetime
+from pathlib import Path
 
-from flask import Blueprint, flash, redirect, render_template, request, send_file, url_for
+from flask import Blueprint, current_app, flash, redirect, render_template, request, send_file, url_for
 
 from .models import DocumentRecord, db
 from .services.document_processor import DocumentProcessor
@@ -24,12 +25,37 @@ def queue():
         "incomplete",
         "error",
     ]
+    folder_counts = get_folder_counts()
+    error_records = (
+        DocumentRecord.query.filter(DocumentRecord.extraction_error.isnot(None))
+        .order_by(DocumentRecord.updated_at.desc())
+        .limit(5)
+        .all()
+    )
     return render_template(
         "queue.html",
         records=records,
         statuses=statuses,
         status_filter=status_filter,
+        folder_counts=folder_counts,
+        error_records=error_records,
     )
+
+
+@main_bp.route("/actions/scan-incoming", methods=["POST"])
+def scan_incoming():
+    processor = DocumentProcessor()
+    count = processor.process_incoming_folder()
+    flash(f"Scanned Incoming folder. Processed {count} file(s).", "success")
+    return redirect(url_for("main.queue"))
+
+
+@main_bp.route("/actions/recover-processing", methods=["POST"])
+def recover_processing():
+    processor = DocumentProcessor()
+    count = processor.recover_processing_folder()
+    flash(f"Recovered {count} file(s) from Processing into the review queue.", "success")
+    return redirect(url_for("main.queue"))
 
 
 @main_bp.route("/records/<int:record_id>", methods=["GET", "POST"])
@@ -87,3 +113,15 @@ def load_extraction_payload(record: DocumentRecord) -> dict:
         return json.loads(record.raw_extraction_json)
     except json.JSONDecodeError:
         return {}
+
+
+def get_folder_counts() -> dict:
+    def count_pdfs(path_value: str) -> int:
+        return len(list(Path(path_value).glob("*.pdf")))
+
+    return {
+        "incoming": count_pdfs(current_app.config["WATCH_FOLDER"]),
+        "processing": count_pdfs(current_app.config["PROCESSING_FOLDER"]),
+        "reviewed": count_pdfs(current_app.config["REVIEWED_FOLDER"]),
+        "error": count_pdfs(current_app.config["ERROR_FOLDER"]),
+    }

@@ -25,16 +25,17 @@ Core runtime flow:
 1. A PDF is saved into the configured `Incoming` folder.
 2. The watcher detects the new file.
 3. The processor waits until the file size stops changing.
-4. The file is moved to `Processing`.
-5. The configured extraction provider returns structured data.
-6. The app stores raw extraction JSON plus normalized fields in SQLite.
-7. The record appears in the review queue as `pending_review`.
-8. Staff reviews the lines and sets a final status:
+4. A periodic folder sweep also checks `Incoming` for any PDFs that may have been added in bulk or missed by Windows file events.
+5. The file is moved to `Processing`.
+6. The configured extraction provider returns structured data.
+7. The app stores raw extraction JSON plus normalized fields in SQLite.
+8. The record appears in the review queue as `pending_review`.
+9. Staff reviews the lines and sets a final status:
    - `ready_for_ezyvet_entry`
    - `needs_manager_review`
    - `incomplete`
-9. After final review, the PDF is moved into `Reviewed`.
-10. If processing fails, the PDF is moved into `Error`.
+10. After final review, the PDF is moved into `Reviewed`.
+11. If processing fails, the PDF is moved into `Error`.
 
 ## Project Layout
 
@@ -83,6 +84,7 @@ Important variables:
 - `WATCHER_ENABLED`: set to `false` if you only want the UI without background watching
 - `FILE_STABILITY_CHECK_INTERVAL`: seconds between file size checks
 - `FILE_STABILITY_REQUIRED_PASSES`: number of unchanged checks before processing starts
+- `WATCH_FOLDER_SCAN_INTERVAL`: seconds between background sweeps of the incoming folder for missed or bulk-added PDFs
 
 All relative paths are resolved from the project root, so the defaults work well for one local Windows machine.
 

@@ -7,17 +7,46 @@
             <h2>Review Queue</h2>
             <p>Documents are automatically added here after extraction.</p>
         </div>
-        <form method="get" class="filter-form">
-            <label for="status">Filter by status</label>
-            <select id="status" name="status">
-                <option value="">All statuses</option>
-                {% for status in statuses %}
-                    <option value="{{ status }}" {% if status_filter == status %}selected{% endif %}>{{ status }}</option>
-                {% endfor %}
-            </select>
-            <button type="submit">Apply</button>
-        </form>
+        <div class="queue-actions">
+            <form method="get" class="filter-form">
+                <label for="status">Filter by status</label>
+                <select id="status" name="status">
+                    <option value="">All statuses</option>
+                    {% for status in statuses %}
+                        <option value="{{ status }}" {% if status_filter == status %}selected{% endif %}>{{ status }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Apply</button>
+            </form>
+            <form method="post" action="{{ url_for('main.scan_incoming') }}">
+                <button type="submit">Scan Incoming Now</button>
+            </form>
+            <form method="post" action="{{ url_for('main.recover_processing') }}">
+                <button type="submit">Recover Processing Files</button>
+            </form>
+        </div>
     </div>
+
+    <div class="folder-stats">
+        <div class="stat-card"><strong>Incoming</strong><span>{{ folder_counts.incoming }}</span></div>
+        <div class="stat-card"><strong>Processing</strong><span>{{ folder_counts.processing }}</span></div>
+        <div class="stat-card"><strong>Reviewed</strong><span>{{ folder_counts.reviewed }}</span></div>
+        <div class="stat-card"><strong>Error</strong><span>{{ folder_counts.error }}</span></div>
+    </div>
+
+    {% if error_records %}
+    <div class="error-panel">
+        <h3>Recent Extraction Errors</h3>
+        <ul class="error-list">
+            {% for record in error_records %}
+            <li>
+                <a href="{{ url_for('main.review_record', record_id=record.id) }}">{{ record.original_filename }}</a>
+                <span>{{ record.extraction_error or "Unknown extraction error" }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
 
     <table class="data-table">
         <thead>
